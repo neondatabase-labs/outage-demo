@@ -12,12 +12,12 @@ import Confetti from 'react-confetti'
 
 interface Stage {
   icon: string
-  branched: boolean
   next?: boolean
   prev?: boolean
-  rightView?: ReactElement
-  leftView?: ReactElement
   label?: string
+  branched: boolean
+  leftView?: ReactElement
+  rightView?: ReactElement
 }
 
 export default function Onboarding() {
@@ -57,11 +57,11 @@ export default function Onboarding() {
           Database: <span className="text-white/70">{databaseName}</span>, Table: <span className="text-white/70">users</span>
         </span>
         <Table className={cn('mt-3 border-t', rows.length < 1 && 'border-separate border-spacing-y-1')}>
-          {columns.length > 0 && (
+          {'id, city, rpu'.split(',').length > 0 && (
             <TableHeader>
               <TableRow>
                 {editable && <TableHead>&nbsp;</TableHead>}
-                {columns.map((i) => (
+                {'id, city, rpu'.split(',').map((i) => (
                   <TableHead key={i}>{i}</TableHead>
                 ))}
               </TableRow>
@@ -158,6 +158,8 @@ export default function Onboarding() {
                     // setNewBranchTime(res.time)
                     setInsertBranchTime(res.time)
                   }
+                  setRows([])
+                  setColumns([])
                   // fetchData(res.new_branch_id)
                   fetchData('main')
                 })
@@ -199,6 +201,8 @@ export default function Onboarding() {
                     duration: 10000,
                     description: 'Fetching data of the restored table...',
                   })
+                  setRows([])
+                  setColumns([])
                   fetchData(newBranchName).then(() => {
                     setIsVisible(true)
                     setTimeout(() => {
@@ -237,6 +241,8 @@ export default function Onboarding() {
             variant="outline"
             onClick={() => {
               setStage(0)
+              setRows([])
+              setColumns([])
               setNewBranchTime(0)
               setNewBranchSize(0)
               setNewBranchName('main')
@@ -273,9 +279,6 @@ export default function Onboarding() {
             duration: 4000,
             description: `Data from ${branchName} database loaded.`,
           })
-        } else {
-          setRows([])
-          setColumns([])
         }
       })
   useEffect(() => {

@@ -15,17 +15,15 @@ export async function GET(request: NextRequest) {
   headers.append('Authorization', `Bearer ${process.env.NEON_API_KEY}`)
   const body = JSON.stringify({
     source_branch_id: process.env.NEON_PARENT_ID,
-    source_timestamp: '2025-02-24T13:00:00.000Z',
+    source_timestamp: '2025-02-25T15:26:00.000Z',
     preserve_under_name: 'main_restored_' + new Date().getTime(),
   })
   const start_time = performance.now()
-  const tmp_1 = await fetch(`https://console.neon.tech/api/v2/projects/${process.env.NEON_PROJECT_ID}/branches/${process.env.NEON_PARENT_ID}/restore`, {
+  await fetch(`https://console.neon.tech/api/v2/projects/${process.env.NEON_PROJECT_ID}/branches/${process.env.NEON_PARENT_ID}/restore`, {
     method: 'POST',
     headers,
     body,
   })
-  const tmp_2 = await tmp_1.json()
-  console.log(tmp_2)
   const end_time = performance.now()
   return NextResponse.json({
     time: end_time - start_time,
