@@ -30,7 +30,7 @@ export default function Onboarding() {
   const { toast } = useToast()
   const [newBranchTime, setNewBranchTime] = useState(0)
   const [newBranchSize, setNewBranchSize] = useState(0)
-  const [newBranchName, setNewBranchName] = useState('')
+  const [newBranchName, setNewBranchName] = useState('main')
   const [dropBranchTime, setDropBranchTime] = useState(0)
   const [mainBranchSize, setMainBranchSize] = useState(0)
   const [resetBranchTime, setResetBranchTime] = useState(0)
@@ -77,57 +77,27 @@ export default function Onboarding() {
               </TableRow>
             </TableHeader>
           )}
-          {rows.length > 0 ? (
-            <TableBody>
-              {rows.map((i, idx) => (
-                <TableRow className={highlight - 1 === idx ? 'bg-green-800 text-white' : ''} key={idx}>
-                  {editable && (
-                    <TableCell>
-                      <Input
-                        type="checkbox"
-                        checked={toBeRemoved.includes(i.id)}
-                        onChange={(event) => {
-                          if (event.target.checked) setToBeRemoved((copyRemoved) => [...copyRemoved, i.id])
-                          else setToBeRemoved((copyRemoved) => [...copyRemoved].filter((oops) => oops != i.id))
-                        }}
-                      />
-                    </TableCell>
-                  )}
-                  {Object.values(i).map((j: any, idx2) => (
-                    <TableCell key={idx2}>{j}</TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          ) : (
-            <TableBody>
-              <TableRow className="animate-pulse bg-gray-100/10">
-                <TableCell></TableCell>
-                <TableCell></TableCell>
-                <TableCell></TableCell>
+          <TableBody>
+            {rows.map((i, idx) => (
+              <TableRow className={highlight - 1 === idx ? 'bg-green-800 text-white' : ''} key={idx}>
+                {editable && (
+                  <TableCell>
+                    <Input
+                      type="checkbox"
+                      checked={toBeRemoved.includes(i.id)}
+                      onChange={(event) => {
+                        if (event.target.checked) setToBeRemoved((copyRemoved) => [...copyRemoved, i.id])
+                        else setToBeRemoved((copyRemoved) => [...copyRemoved].filter((oops) => oops != i.id))
+                      }}
+                    />
+                  </TableCell>
+                )}
+                {Object.values(i).map((j: any, idx2) => (
+                  <TableCell key={idx2}>{j}</TableCell>
+                ))}
               </TableRow>
-              <TableRow className="animate-pulse bg-gray-100/10">
-                <TableCell></TableCell>
-                <TableCell></TableCell>
-                <TableCell></TableCell>
-              </TableRow>
-              <TableRow className="animate-pulse bg-gray-100/10">
-                <TableCell></TableCell>
-                <TableCell></TableCell>
-                <TableCell></TableCell>
-              </TableRow>
-              <TableRow className="animate-pulse bg-gray-100/10">
-                <TableCell></TableCell>
-                <TableCell></TableCell>
-                <TableCell></TableCell>
-              </TableRow>
-              <TableRow className="animate-pulse bg-gray-100/10">
-                <TableCell></TableCell>
-                <TableCell></TableCell>
-                <TableCell></TableCell>
-              </TableRow>
-            </TableBody>
-          )}
+            ))}
+          </TableBody>
         </Table>
       </>
     )
@@ -142,8 +112,7 @@ export default function Onboarding() {
         <div className="contents">
           <h1 className="text-3xl font-semibold text-white">Recover from Postgres outages in milliseconds - regardless of size</h1>
           <span className="mt-3 font-light text-gray-400">
-            In this demo, you will create an outage in your database and restore it to the original state in milliseconds. Behind the scenes, you are
-            leveraging&nbsp;
+            In this demo, you will create an outage in your database and restore it to the original state in milliseconds. Behind the scenes, you are leveraging&nbsp;
             <a className="text-white/75 hover:underline hover:underline-offset-4" href="https://console.neon.tech/signup">
               Neon
             </a>
@@ -185,7 +154,6 @@ export default function Onboarding() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                  branchName: 'main',
                   query: `TRUNCATE TABLE users`,
                 }),
               })
@@ -196,15 +164,20 @@ export default function Onboarding() {
                     description: `Fetching data in the updated database...`,
                   })
                   // setNewBranchName(res.new_branch_id)
-                  if (res.time) setNewBranchTime(res.time)
+                  if (res.time) {
+                    // setNewBranchTime(res.time)
+                    setInsertBranchTime(res.time)
+                  }
                   // fetchData(res.new_branch_id)
                   fetchData('main')
                 })
               setStage((stage) => stage + 1)
             }}
-            className="mt-8 max-w-max bg-red-600 hover:bg-red-800 text-white"
+            className="mt-8 max-w-max bg-red-600 text-white hover:bg-red-800"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" className="mr-2 fill-white" viewBox="0 0 56 56"><path d="M 9.5899 50.2070 L 46.4102 50.2070 C 49.9257 50.2070 52.1289 47.6758 52.1289 44.4883 C 52.1289 43.5273 51.8947 42.5664 51.3791 41.6758 L 32.9336 8.6758 C 31.8789 6.7773 29.9570 5.7930 28.0117 5.7930 C 26.0899 5.7930 24.1211 6.7773 23.0664 8.6758 L 4.6446 41.6992 C 4.1289 42.5898 3.8711 43.5273 3.8711 44.4883 C 3.8711 47.6758 6.0977 50.2070 9.5899 50.2070 Z M 28.0117 42.0273 C 24.4258 42.0273 21.4961 39.2148 21.4961 35.6523 C 21.4961 33.5899 22.4805 31.6445 23.4648 29.8399 L 27.4024 22.5742 C 27.5664 22.3164 27.7305 22.1523 28.0117 22.1523 C 28.2930 22.1523 28.5039 22.3164 28.6211 22.5742 L 32.5586 29.8399 C 33.5195 31.6445 34.5273 33.5899 34.5273 35.6523 C 34.5273 39.2148 31.5977 42.0273 28.0117 42.0273 Z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" className="mr-2 fill-white" viewBox="0 0 56 56">
+              <path d="M 9.5899 50.2070 L 46.4102 50.2070 C 49.9257 50.2070 52.1289 47.6758 52.1289 44.4883 C 52.1289 43.5273 51.8947 42.5664 51.3791 41.6758 L 32.9336 8.6758 C 31.8789 6.7773 29.9570 5.7930 28.0117 5.7930 C 26.0899 5.7930 24.1211 6.7773 23.0664 8.6758 L 4.6446 41.6992 C 4.1289 42.5898 3.8711 43.5273 3.8711 44.4883 C 3.8711 47.6758 6.0977 50.2070 9.5899 50.2070 Z M 28.0117 42.0273 C 24.4258 42.0273 21.4961 39.2148 21.4961 35.6523 C 21.4961 33.5899 22.4805 31.6445 23.4648 29.8399 L 27.4024 22.5742 C 27.5664 22.3164 27.7305 22.1523 28.0117 22.1523 C 28.2930 22.1523 28.5039 22.3164 28.6211 22.5742 L 32.5586 29.8399 C 33.5195 31.6445 34.5273 33.5899 34.5273 35.6523 C 34.5273 39.2148 31.5977 42.0273 28.0117 42.0273 Z" />
+            </svg>
             Truncate the users table &rarr;
           </Button>
         </div>
@@ -219,7 +192,8 @@ export default function Onboarding() {
         <div className="contents">
           <span className="text-xl font-medium">But... I messed it up!</span>
           <span className="mt-3 text-balance text-gray-400">
-            In about <span className={cn(insertBranchTime > 0 && 'text-green-400')}>{insertBranchTime > 0 ? Math.round(insertBranchTime * 100) / 100 : '............'}</span> ms, you truncated the users table and caused an outage in application. How do I recover now?
+            In about <span className={cn(insertBranchTime > 0 && 'text-green-400')}>{insertBranchTime > 0 ? Math.round(insertBranchTime * 100) / 100 : '............'}</span> ms,
+            you truncated the users table and caused an outage in application. How do I recover now?
           </span>
           <Button
             onClick={() => {
@@ -227,13 +201,13 @@ export default function Onboarding() {
                 duration: 4000,
                 description: 'Requesting database restore...',
               })
-              fetch('/project/reset?branchName=' + newBranchName)
+              fetch('/project/reset')
                 .then((res) => res.json())
                 .then((res) => {
                   if (res.time) setResetBranchTime(res.time)
                   toast({
                     duration: 10000,
-                    description: 'Fetching data of the restored database...',
+                    description: 'Fetching data of the restored table...',
                   })
                   fetchData(newBranchName).then(() => {
                     setIsVisible(true)
@@ -283,7 +257,7 @@ export default function Onboarding() {
               setColumns5([])
               setNewBranchTime(0)
               setNewBranchSize(0)
-              setNewBranchName('')
+              setNewBranchName('main')
             }}
             className="mt-8 max-w-max bg-transparent text-gray-400"
           >
@@ -300,8 +274,7 @@ export default function Onboarding() {
       .then((res) => res.json())
       .then((res) => {
         const { logical_size } = res
-        if (branchName === 'main') setMainBranchSize(logical_size)
-        else setNewBranchSize(logical_size === 'NaN' ? mainBranchSize : logical_size)
+        setMainBranchSize(logical_size)
       })
   const fetchData = (branchName: string) =>
     fetch(`/project/data?branchName=${branchName}`)
@@ -311,41 +284,16 @@ export default function Onboarding() {
       })
       .then((res) => {
         if (res.rows.length > 0) {
-          if (branchName === 'main') {
-            setSourceConnectionString(res.sanitizedConnectionString)
-            setRows(res.rows)
-            setColumns(Object.keys(res.rows[0]))
-          } else {
-            if (rows_2.length < 1) {
-              setDestinationConnectionString(res.sanitizedConnectionString)
-              setRows2(res.rows)
-              setColumns2(Object.keys(res.rows[0]))
-            } else if (rows_3.length < 1) {
-              setDestinationConnectionString(res.sanitizedConnectionString)
-              setRows3(res.rows)
-              setColumns3(Object.keys(res.rows[0]))
-            } else if (rows_4.length < 1) {
-              setDestinationConnectionString(res.sanitizedConnectionString)
-              setRows4(res.rows)
-              setColumns4(Object.keys(res.rows[0]))
-            } else if (rows_5.length < 1) {
-              setDestinationConnectionString(res.sanitizedConnectionString)
-              setRows5(res.rows)
-              setColumns5(Object.keys(res.rows[0]))
-            }
-          }
+          setSourceConnectionString(res.sanitizedConnectionString)
+          setRows(res.rows)
+          setColumns(Object.keys(res.rows[0]))
           toast({
             duration: 4000,
             description: `Data from ${branchName} database loaded.`,
           })
         } else {
-          if (branchName === 'main') {
-            setRows([])
-            setColumns([])
-          } else {
-            setRows2([])
-            setColumns2([])
-          }
+          setRows([])
+          setColumns([])
         }
       })
   useEffect(() => {

@@ -9,15 +9,12 @@ export const fetchCache = 'force-no-store'
 import { type NextRequest, NextResponse } from 'next/server'
 
 export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams
-  const branchName = searchParams.get('branchName')
   try {
     const headers = new Headers()
     headers.append('Accept', 'application/json')
     headers.append('Content-Type', 'application/json')
     headers.append('Authorization', `Bearer ${process.env.NEON_API_KEY}`)
-    const branch_id = branchName === 'main' ? process.env.NEON_PARENT_ID : branchName
-    const respCall = await fetch(`https://console.neon.tech/api/v2/projects/${process.env.NEON_PROJECT_ID}/branches/${branch_id}`, {
+    const respCall = await fetch(`https://console.neon.tech/api/v2/projects/${process.env.NEON_PROJECT_ID}/branches/${process.env.NEON_PARENT_ID}`, {
       headers,
     })
     const tmp = await respCall.json()

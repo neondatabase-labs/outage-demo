@@ -22,24 +22,11 @@ const maskConnectionString = (connectionString: string) => {
 }
 
 export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams
-  const branchName = searchParams.get('branchName')
   const sql = neon(`${process.env.DB_CONNECTION_STRING}`)
   try {
-    if (branchName === 'main') {
-      const rows = await sql`SELECT id, city, rpu FROM users ORDER BY id DESC LIMIT 5`
-      return NextResponse.json({
-        sanitizedConnectionString: maskConnectionString(`${process.env.DB_CONNECTION_STRING}`),
-        rows,
-        code: 1,
-      })
-    }
-    const parent_rows = await sql`SELECT * FROM branches WHERE branch_name = ${branchName} LIMIT 1`
-    const connectionString = parent_rows[0]['connection_string']
-    const sql_1 = neon(connectionString)
-    const rows = await sql_1`SELECT * FROM users ORDER BY id DESC LIMIT 5`
+    const rows = await sql`SELECT id, city, rpu FROM users ORDER BY id DESC LIMIT 5`
     return NextResponse.json({
-      sanitizedConnectionString: maskConnectionString(connectionString),
+      sanitizedConnectionString: maskConnectionString(`${process.env.DB_CONNECTION_STRING}`),
       rows,
       code: 1,
     })
