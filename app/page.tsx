@@ -31,22 +31,12 @@ export default function Onboarding() {
   const [newBranchTime, setNewBranchTime] = useState(0)
   const [newBranchSize, setNewBranchSize] = useState(0)
   const [newBranchName, setNewBranchName] = useState('main')
-  const [dropBranchTime, setDropBranchTime] = useState(0)
   const [mainBranchSize, setMainBranchSize] = useState(0)
   const [resetBranchTime, setResetBranchTime] = useState(0)
   const [insertBranchTime, setInsertBranchTime] = useState(0)
   const [sourceConnectionString, setSourceConnectionString] = useState('')
-  const [destinationConnectionString, setDestinationConnectionString] = useState('')
   const [rows, setRows] = useState([])
   const [columns, setColumns] = useState<string[]>([])
-  const [rows_2, setRows2] = useState([])
-  const [columns_2, setColumns2] = useState<string[]>([])
-  const [rows_3, setRows3] = useState([])
-  const [columns_3, setColumns3] = useState<string[]>([])
-  const [rows_4, setRows4] = useState([])
-  const [columns_4, setColumns4] = useState<string[]>([])
-  const [rows_5, setRows5] = useState([])
-  const [columns_5, setColumns5] = useState<string[]>([])
   //
   function DataTable({
     rows = [],
@@ -148,13 +138,13 @@ export default function Onboarding() {
             onClick={() => {
               toast({
                 duration: 4000,
-                description: `Truncating the users table in the main database...`,
+                description: `Dropping the users table in the main database...`,
               })
               fetch('/project/query', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                  query: `TRUNCATE TABLE users`,
+                  query: `DROP TABLE users`,
                 }),
               })
                 .then((res) => res.json())
@@ -178,7 +168,7 @@ export default function Onboarding() {
             <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" className="mr-2 fill-white" viewBox="0 0 56 56">
               <path d="M 9.5899 50.2070 L 46.4102 50.2070 C 49.9257 50.2070 52.1289 47.6758 52.1289 44.4883 C 52.1289 43.5273 51.8947 42.5664 51.3791 41.6758 L 32.9336 8.6758 C 31.8789 6.7773 29.9570 5.7930 28.0117 5.7930 C 26.0899 5.7930 24.1211 6.7773 23.0664 8.6758 L 4.6446 41.6992 C 4.1289 42.5898 3.8711 43.5273 3.8711 44.4883 C 3.8711 47.6758 6.0977 50.2070 9.5899 50.2070 Z M 28.0117 42.0273 C 24.4258 42.0273 21.4961 39.2148 21.4961 35.6523 C 21.4961 33.5899 22.4805 31.6445 23.4648 29.8399 L 27.4024 22.5742 C 27.5664 22.3164 27.7305 22.1523 28.0117 22.1523 C 28.2930 22.1523 28.5039 22.3164 28.6211 22.5742 L 32.5586 29.8399 C 33.5195 31.6445 34.5273 33.5899 34.5273 35.6523 C 34.5273 39.2148 31.5977 42.0273 28.0117 42.0273 Z" />
             </svg>
-            Truncate the users table &rarr;
+            Drop the users table &rarr;
           </Button>
         </div>
       ),
@@ -193,7 +183,7 @@ export default function Onboarding() {
           <span className="text-xl font-medium">But... I messed it up!</span>
           <span className="mt-3 text-balance text-gray-400">
             In about <span className={cn(insertBranchTime > 0 && 'text-green-400')}>{insertBranchTime > 0 ? Math.round(insertBranchTime * 100) / 100 : '............'}</span> ms,
-            you truncated the users table and caused an outage in application. How do I recover now?
+            you dropped the users table and caused an outage in application. How do I recover now?
           </span>
           <Button
             onClick={() => {
@@ -225,7 +215,7 @@ export default function Onboarding() {
           </Button>
         </div>
       ),
-      rightView: <DataTable highlight={1} rows={rows_4} columns={columns_4} databaseName={newBranchName} />,
+      rightView: <DataTable rows={rows} columns={columns} databaseName={newBranchName} />,
     },
     {
       label: 'Restored database',
@@ -247,14 +237,6 @@ export default function Onboarding() {
             variant="outline"
             onClick={() => {
               setStage(0)
-              setRows2([])
-              setRows3([])
-              setRows4([])
-              setRows5([])
-              setColumns2([])
-              setColumns3([])
-              setColumns4([])
-              setColumns5([])
               setNewBranchTime(0)
               setNewBranchSize(0)
               setNewBranchName('main')
@@ -265,7 +247,7 @@ export default function Onboarding() {
           </Button>
         </div>
       ),
-      rightView: <DataTable rows={rows_5} columns={columns_5} databaseName={newBranchName} />,
+      rightView: <DataTable rows={rows} columns={columns} databaseName={newBranchName} />,
     },
   ]
   const [stageLength, setStageLength] = useState(stages.length)

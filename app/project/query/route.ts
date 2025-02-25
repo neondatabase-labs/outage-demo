@@ -8,7 +8,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 neonConfig.poolQueryViaFetch = true
 
 export async function POST(request: NextRequest) {
-  const {  query } = await request.json()
+  const { query } = await request.json()
   const sql = neon(`${process.env.DB_CONNECTION_STRING}`)
   try {
     const start_time = performance.now()
