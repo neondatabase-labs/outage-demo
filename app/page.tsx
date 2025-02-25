@@ -16,6 +16,7 @@ interface Stage {
   prev?: boolean
   label?: string
   branched: boolean
+  lineColor?: string
   leftView?: ReactElement
   rightView?: ReactElement
 }
@@ -177,7 +178,8 @@ export default function Onboarding() {
       rightView: <DataTable rows={rows} columns={columns} />,
     },
     {
-      label: 'Edited database',
+      lineColor: 'bg-red-800',
+      label: 'Broken database',
       icon: 'https://www.svgrepo.com/show/532994/plus.svg',
       branched: true,
       leftView: (
@@ -222,7 +224,8 @@ export default function Onboarding() {
       rightView: <DataTable rows={rows} columns={columns} databaseName={newBranchName} />,
     },
     {
-      label: 'Restored database',
+      lineColor: 'bg-green-800',
+      label: 'Recovered database',
       icon: 'https://www.svgrepo.com/show/521807/restore.svg',
       branched: false,
       leftView: (
@@ -312,17 +315,17 @@ export default function Onboarding() {
           <Fragment key={_}>
             <div className={cn('relative flex flex-row', _ !== stage && 'hidden lg:block')}>
               {!(stages[_].branched && _ - 1 > 0 && stages[_ - 1].branched) && stages[_].branched && (
-                <div className={cn('branching-line', _ === stage ? 'bg-white' : 'bg-white/10')} />
+                <div className={cn('branching-line', _ === stage ? (stages[_].lineColor || 'bg-white') : 'bg-white/10')} />
               )}
               {!(stages[_].branched && _ - 1 > 0 && stages[_ - 1].branched) && _ - 1 >= 0 && stages[_ - 1].branched && (
-                <div className={cn('branching-line-begin', _ === stage ? 'bg-white' : 'bg-white/10')} />
+                <div className={cn('branching-line-begin', _ === stage ? (stages[_].lineColor || 'bg-white') : 'bg-white/10')} />
               )}
               {stages[_].branched && _ - 1 > 0 && stages[_ - 1].branched && <div className={cn('horizontal-line mt-6 w-[60px]', _ === stage ? 'bg-white' : 'bg-white/10')} />}
               {!(stages[_].branched && _ - 1 > 0 && stages[_ - 1].branched) && (
                 <div
                   className={cn(
                     'horizontal-line',
-                    _ === stage ? 'bg-white' : 'bg-white/10',
+                    _ === stage ? (stages[_].lineColor || 'bg-white') : 'bg-white/10',
                     stages[_].branched || (_ - 1 >= 0 && stages[_ - 1].branched) ? '!w-[30px]' : '!w-[60px]',
                     _ - 1 >= 0 && stages[_ - 1].branched && 'ml-[30px]',
                   )}
@@ -346,7 +349,7 @@ export default function Onboarding() {
                 transition={{ duration: 1 }}
                 className={cn('absolute -bottom-8 z-20 min-w-max max-w-max', _ === stage ? 'text-white' : 'text-white/10 opacity-10')}
               >
-                {stages[_].label}
+                {stages[_].label} 
               </motion.span>
             </div>
           </Fragment>
