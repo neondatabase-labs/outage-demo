@@ -68,27 +68,57 @@ export default function Onboarding() {
               </TableRow>
             </TableHeader>
           )}
-          <TableBody>
-            {rows.map((i, idx) => (
-              <TableRow className={highlight - 1 === idx ? 'bg-green-800 text-white' : ''} key={idx}>
-                {editable && (
-                  <TableCell>
-                    <Input
-                      type="checkbox"
-                      checked={toBeRemoved.includes(i.id)}
-                      onChange={(event) => {
-                        if (event.target.checked) setToBeRemoved((copyRemoved) => [...copyRemoved, i.id])
-                        else setToBeRemoved((copyRemoved) => [...copyRemoved].filter((oops) => oops != i.id))
-                      }}
-                    />
-                  </TableCell>
-                )}
-                {Object.values(i).map((j: any, idx2) => (
-                  <TableCell key={idx2}>{j}</TableCell>
-                ))}
+          {!loadingData ? (
+            <TableBody>
+              {rows.map((i, idx) => (
+                <TableRow className={highlight - 1 === idx ? 'bg-green-800 text-white' : ''} key={idx}>
+                  {editable && (
+                    <TableCell>
+                      <Input
+                        type="checkbox"
+                        checked={toBeRemoved.includes(i.id)}
+                        onChange={(event) => {
+                          if (event.target.checked) setToBeRemoved((copyRemoved) => [...copyRemoved, i.id])
+                          else setToBeRemoved((copyRemoved) => [...copyRemoved].filter((oops) => oops != i.id))
+                        }}
+                      />
+                    </TableCell>
+                  )}
+                  {Object.values(i).map((j: any, idx2) => (
+                    <TableCell key={idx2}>{j}</TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          ) : (
+            <TableBody>
+              <TableRow className="animate-pulse bg-gray-100/10">
+                <TableCell></TableCell>
+                <TableCell></TableCell>
+                <TableCell></TableCell>
               </TableRow>
-            ))}
-          </TableBody>
+              <TableRow className="animate-pulse bg-gray-100/10">
+                <TableCell></TableCell>
+                <TableCell></TableCell>
+                <TableCell></TableCell>
+              </TableRow>
+              <TableRow className="animate-pulse bg-gray-100/10">
+                <TableCell></TableCell>
+                <TableCell></TableCell>
+                <TableCell></TableCell>
+              </TableRow>
+              <TableRow className="animate-pulse bg-gray-100/10">
+                <TableCell></TableCell>
+                <TableCell></TableCell>
+                <TableCell></TableCell>
+              </TableRow>
+              <TableRow className="animate-pulse bg-gray-100/10">
+                <TableCell></TableCell>
+                <TableCell></TableCell>
+                <TableCell></TableCell>
+              </TableRow>
+            </TableBody>
+          )}
         </Table>
       </>
     )
@@ -260,6 +290,7 @@ export default function Onboarding() {
     },
   ]
   const [stageLength, setStageLength] = useState(stages.length)
+  const [loadingData, setLoadingData] = useState(false)
   const fetchBranchSize = (branchName: string) =>
     fetch(`/project/size?branchName=${branchName}`)
       .then((res) => res.json())
@@ -267,13 +298,15 @@ export default function Onboarding() {
         const { logical_size } = res
         setMainBranchSize(logical_size)
       })
-  const fetchData = (branchName: string) =>
-    fetch(`/project/data?branchName=${branchName}`)
+  const fetchData = (branchName: string) => {
+    setLoadingData(true)
+    return fetch(`/project/data?branchName=${branchName}`)
       .then((res) => {
         fetchBranchSize(branchName)
         return res.json()
       })
       .then((res) => {
+        setLoadingData(false)
         if (res.rows.length > 0) {
           setSourceConnectionString(res.sanitizedConnectionString)
           setRows(res.rows)
@@ -284,6 +317,7 @@ export default function Onboarding() {
           })
         }
       })
+  }
   useEffect(() => {
     if (stage === 1) {
       toast({
@@ -315,17 +349,17 @@ export default function Onboarding() {
           <Fragment key={_}>
             <div className={cn('relative flex flex-row', _ !== stage && 'hidden lg:block')}>
               {!(stages[_].branched && _ - 1 > 0 && stages[_ - 1].branched) && stages[_].branched && (
-                <div className={cn('branching-line', _ === stage ? (stages[_].lineColor || 'bg-white') : 'bg-white/10')} />
+                <div className={cn('branching-line', _ === stage ? stages[_].lineColor || 'bg-white' : 'bg-white/10')} />
               )}
               {!(stages[_].branched && _ - 1 > 0 && stages[_ - 1].branched) && _ - 1 >= 0 && stages[_ - 1].branched && (
-                <div className={cn('branching-line-begin', _ === stage ? (stages[_].lineColor || 'bg-white') : 'bg-white/10')} />
+                <div className={cn('branching-line-begin', _ === stage ? stages[_].lineColor || 'bg-white' : 'bg-white/10')} />
               )}
               {stages[_].branched && _ - 1 > 0 && stages[_ - 1].branched && <div className={cn('horizontal-line mt-6 w-[60px]', _ === stage ? 'bg-white' : 'bg-white/10')} />}
               {!(stages[_].branched && _ - 1 > 0 && stages[_ - 1].branched) && (
                 <div
                   className={cn(
                     'horizontal-line',
-                    _ === stage ? (stages[_].lineColor || 'bg-white') : 'bg-white/10',
+                    _ === stage ? stages[_].lineColor || 'bg-white' : 'bg-white/10',
                     stages[_].branched || (_ - 1 >= 0 && stages[_ - 1].branched) ? '!w-[30px]' : '!w-[60px]',
                     _ - 1 >= 0 && stages[_ - 1].branched && 'ml-[30px]',
                   )}
@@ -349,7 +383,7 @@ export default function Onboarding() {
                 transition={{ duration: 1 }}
                 className={cn('absolute -bottom-8 z-20 min-w-max max-w-max', _ === stage ? 'text-white' : 'text-white/10 opacity-10')}
               >
-                {stages[_].label} 
+                {stages[_].label}
               </motion.span>
             </div>
           </Fragment>
