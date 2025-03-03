@@ -45,6 +45,7 @@ export async function GET() {
       }),
     ])
   } catch (e) {
+    // @ts-ignore
     console.log(e.message || e.toString())
   }
   return NextResponse.json({
