@@ -29,18 +29,24 @@ export async function GET() {
     headers,
     body,
   })
-  await Promise.resolve(setTimeout(() => {}, 200))
-  const tmp = await Promise.resolve(
-    fetch(`https://console.neon.tech/api/v2/projects/${process.env.NEON_PROJECT_ID}/branches?search=${preserve_under_name}&sort_by=updated_at&sort_order=desc&limit=1`, {
-      headers,
-    }).then((res) => res.json()),
-  )
-  await client?.publishJSON({
-    url: 'https://neon-demos-outage.vercel.app/project/clean',
-    body: { new_branch_id: tmp['branches'][0].id },
-    delay: 30 * 60,
-  })
   const end_time = performance.now()
+  try {
+    await Promise.resolve(setTimeout(() => {}, 200))
+    const tmp = await Promise.resolve(
+      fetch(`https://console.neon.tech/api/v2/projects/${process.env.NEON_PROJECT_ID}/branches?search=${preserve_under_name}&sort_by=updated_at&sort_order=desc&limit=1`, {
+        headers,
+      }).then((res) => res.json()),
+    )
+    await Promise.allSettled([
+      client?.publishJSON({
+        url: 'https://neon-demos-outage.vercel.app/project/clean',
+        body: { new_branch_id: tmp['branches'][0].id },
+        delay: 30 * 60,
+      }),
+    ])
+  } catch (e) {
+    console.log(e.message || e.toString())
+  }
   return NextResponse.json({
     time: end_time - start_time,
     code: 1,

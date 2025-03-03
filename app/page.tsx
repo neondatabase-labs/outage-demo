@@ -8,126 +8,6 @@ import { TimerReset } from 'lucide-react'
 import { Fragment, ReactElement, useEffect, useState } from 'react'
 import Confetti from 'react-confetti'
 
-const reloadIframe = (expecting?: boolean) => {
-  const iframe = document.querySelector('iframe')
-  if (iframe) {
-    iframe.src = iframe.src
-    fetch(iframe.src).then((res) => {
-      if (res.status !== 200 && expecting) {
-        setTimeout(() => {
-          reloadIframe()
-        }, 200)
-      }
-    })
-  }
-}
-
-const IframeView = () => {
-  const [isLoading, setIsLoading] = useState(false)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [queryResults, setQueryResults] = useState<any[]>([])
-  return (
-    <div className={'flex flex-col'}>
-      <div className="mb-4 flex flex-row flex-wrap gap-2">
-        <Button
-          onClick={() => {
-            reloadIframe()
-          }}
-          className="group border bg-transparent text-gray-400 hover:border-white hover:bg-transparent hover:text-white"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" className="mr-2" viewBox="0 0 24 24">
-            <title>Reload</title>
-            <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-              <g id="Reload">
-                <rect id="Rectangle" fillRule="nonzero" x="0" y="0" width="24" height="24"></rect>
-                <path
-                  d="M4,13 C4,17.4183 7.58172,21 12,21 C16.4183,21 20,17.4183 20,13 C20,8.58172 16.4183,5 12,5 C10.4407,5 8.98566,5.44609 7.75543,6.21762"
-                  id="Path"
-                  className="stroke-gray-400 group-hover:stroke-gray-100"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                ></path>
-                <path
-                  d="M9.2384,1.89795 L7.49856,5.83917 C7.27552,6.34441 7.50429,6.9348 8.00954,7.15784 L11.9508,8.89768"
-                  id="Path"
-                  className="stroke-gray-400 group-hover:stroke-gray-100"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                ></path>
-              </g>
-            </g>
-          </svg>
-          <span>Reload App</span>
-        </Button>
-        <Button
-          onClick={() => {
-            setIsModalOpen(true)
-            setIsLoading(true)
-            fetch('/project/data')
-              .then((res) => res.json())
-              .then((res) => setQueryResults(res.rows))
-              .finally(() => {
-                setIsLoading(false)
-              })
-          }}
-          className="group border bg-transparent text-gray-400 hover:border-white hover:bg-transparent hover:text-white"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 15 15" fill="none">
-            <path
-              fillRule="evenodd"
-              clipRule="evenodd"
-              className="fill-gray-400 group-hover:fill-gray-100"
-              d="M5.07505 4.10001C5.07505 2.91103 6.25727 1.92502 7.50005 1.92502C8.74283 1.92502 9.92505 2.91103 9.92505 4.10001C9.92505 5.19861 9.36782 5.71436 8.61854 6.37884L8.58757 6.4063C7.84481 7.06467 6.92505 7.87995 6.92505 9.5C6.92505 9.81757 7.18248 10.075 7.50005 10.075C7.81761 10.075 8.07505 9.81757 8.07505 9.5C8.07505 8.41517 8.62945 7.90623 9.38156 7.23925L9.40238 7.22079C10.1496 6.55829 11.075 5.73775 11.075 4.10001C11.075 2.12757 9.21869 0.775024 7.50005 0.775024C5.7814 0.775024 3.92505 2.12757 3.92505 4.10001C3.92505 4.41758 4.18249 4.67501 4.50005 4.67501C4.81761 4.67501 5.07505 4.41758 5.07505 4.10001ZM7.50005 13.3575C7.9833 13.3575 8.37505 12.9657 8.37505 12.4825C8.37505 11.9992 7.9833 11.6075 7.50005 11.6075C7.0168 11.6075 6.62505 11.9992 6.62505 12.4825C6.62505 12.9657 7.0168 13.3575 7.50005 13.3575Z"
-            />
-          </svg>
-          <span className="ml-1">Query Tweets</span>
-        </Button>
-        <Button
-          onClick={() => {
-            window.open('https://twitter-clone-outage-demo.vercel.app', '_blank')
-          }}
-          className="group border bg-transparent text-gray-400 hover:border-white hover:bg-transparent hover:text-white"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path
-              className="stroke-gray-400 group-hover:stroke-gray-100"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"
-            />
-          </svg>
-          <span className="ml-2">Open</span>
-        </Button>
-      </div>
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="max-h-[80vh] w-[600px] overflow-auto rounded-lg bg-black p-6">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-white">Database Query Results</h3>
-              <Button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-white" variant="ghost">
-                Close
-              </Button>
-            </div>
-            {isLoading ? (
-              <div className="text-center text-gray-400">Loading...</div>
-            ) : (
-              <div className="space-y-2">
-                {queryResults.map((tweet, i) => (
-                  <div key={i} className="rounded bg-black p-3">
-                    <pre className="whitespace-pre-wrap text-sm text-gray-200">{JSON.stringify(tweet, null, 2)}</pre>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-      <iframe src="https://twitter-clone-outage-demo.vercel.app" className="min-h-[400px] w-[400px] !max-w-full rounded bg-white" />
-    </div>
-  )
-}
-
 interface Stage {
   icon: string
   next?: boolean
@@ -137,6 +17,23 @@ interface Stage {
   lineColor?: string
   leftView?: ReactElement
   rightView?: ReactElement
+}
+
+const reloadIframe = (expecting?: boolean) => {
+  const iframe = document.querySelector('iframe')
+  if (iframe) {
+    iframe.src = iframe.src
+    fetch(iframe.src).then((res) => {
+      if (res.status === 200 && expecting) {
+        const showPopElement = document.createElement('div')
+        showPopElement.id = 'show-pop'
+        document.body.appendChild(showPopElement)
+      }
+      if (res.status !== 200 && expecting) {
+        reloadIframe(expecting)
+      }
+    })
+  }
 }
 
 export default function Onboarding() {
@@ -152,6 +49,112 @@ export default function Onboarding() {
   const [mainBranchSize, setMainBranchSize] = useState(0)
   const [resetBranchTime, setResetBranchTime] = useState(0)
   const [insertBranchTime, setInsertBranchTime] = useState(0)
+  //
+  const IframeView = () => {
+    const [isLoading, setIsLoading] = useState(false)
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [queryResults, setQueryResults] = useState<any[]>([])
+    return (
+      <div className={'flex flex-col'}>
+        <div className="mb-4 flex flex-row flex-wrap gap-2">
+          <Button
+            onClick={() => {
+              reloadIframe()
+            }}
+            className="group border bg-transparent text-gray-400 hover:border-white hover:bg-transparent hover:text-white"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" className="mr-2" viewBox="0 0 24 24">
+              <title>Reload</title>
+              <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+                <g id="Reload">
+                  <rect id="Rectangle" fillRule="nonzero" x="0" y="0" width="24" height="24"></rect>
+                  <path
+                    d="M4,13 C4,17.4183 7.58172,21 12,21 C16.4183,21 20,17.4183 20,13 C20,8.58172 16.4183,5 12,5 C10.4407,5 8.98566,5.44609 7.75543,6.21762"
+                    id="Path"
+                    className="stroke-gray-400 group-hover:stroke-gray-100"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  ></path>
+                  <path
+                    d="M9.2384,1.89795 L7.49856,5.83917 C7.27552,6.34441 7.50429,6.9348 8.00954,7.15784 L11.9508,8.89768"
+                    id="Path"
+                    className="stroke-gray-400 group-hover:stroke-gray-100"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  ></path>
+                </g>
+              </g>
+            </svg>
+            <span>Reload App</span>
+          </Button>
+          <Button
+            onClick={() => {
+              setIsModalOpen(true)
+              setIsLoading(true)
+              fetch('/project/data')
+                .then((res) => res.json())
+                .then((res) => setQueryResults(res.rows))
+                .finally(() => {
+                  setIsLoading(false)
+                })
+            }}
+            className="group border bg-transparent text-gray-400 hover:border-white hover:bg-transparent hover:text-white"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 15 15" fill="none">
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                className="fill-gray-400 group-hover:fill-gray-100"
+                d="M5.07505 4.10001C5.07505 2.91103 6.25727 1.92502 7.50005 1.92502C8.74283 1.92502 9.92505 2.91103 9.92505 4.10001C9.92505 5.19861 9.36782 5.71436 8.61854 6.37884L8.58757 6.4063C7.84481 7.06467 6.92505 7.87995 6.92505 9.5C6.92505 9.81757 7.18248 10.075 7.50005 10.075C7.81761 10.075 8.07505 9.81757 8.07505 9.5C8.07505 8.41517 8.62945 7.90623 9.38156 7.23925L9.40238 7.22079C10.1496 6.55829 11.075 5.73775 11.075 4.10001C11.075 2.12757 9.21869 0.775024 7.50005 0.775024C5.7814 0.775024 3.92505 2.12757 3.92505 4.10001C3.92505 4.41758 4.18249 4.67501 4.50005 4.67501C4.81761 4.67501 5.07505 4.41758 5.07505 4.10001ZM7.50005 13.3575C7.9833 13.3575 8.37505 12.9657 8.37505 12.4825C8.37505 11.9992 7.9833 11.6075 7.50005 11.6075C7.0168 11.6075 6.62505 11.9992 6.62505 12.4825C6.62505 12.9657 7.0168 13.3575 7.50005 13.3575Z"
+              />
+            </svg>
+            <span className="ml-1">Query Tweets</span>
+          </Button>
+          <Button
+            onClick={() => {
+              window.open('https://twitter-clone-outage-demo.vercel.app', '_blank')
+            }}
+            className="group border bg-transparent text-gray-400 hover:border-white hover:bg-transparent hover:text-white"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path
+                className="stroke-gray-400 group-hover:stroke-gray-100"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"
+              />
+            </svg>
+            <span className="ml-2">Open</span>
+          </Button>
+        </div>
+        {isModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="max-h-[80vh] w-[600px] overflow-auto rounded-lg bg-black p-6">
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-white">Database Query Results</h3>
+                <Button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-white" variant="ghost">
+                  Close
+                </Button>
+              </div>
+              {isLoading ? (
+                <div className="text-center text-gray-400">Loading...</div>
+              ) : (
+                <div className="space-y-2">
+                  {queryResults.map((tweet, i) => (
+                    <div key={i} className="rounded bg-black p-3">
+                      <pre className="whitespace-pre-wrap text-sm text-gray-200">{JSON.stringify(tweet, null, 2)}</pre>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+        <iframe src="https://twitter-clone-outage-demo.vercel.app" className="min-h-[400px] w-[400px] !max-w-full rounded bg-white" />
+      </div>
+    )
+  }
   //
   const stages: Stage[] = [
     {
@@ -213,21 +216,10 @@ export default function Onboarding() {
               })
                 .then((res) => res.json())
                 .then((res) => {
-                  // toast({
-                  //   duration: 4000,
-                  //   description: `Fetching size of the updated database...`,
-                  // })
-                  // setNewBranchName(res.new_branch_id)
                   if (res.time) {
-                    // setNewBranchTime(res.time)
                     setInsertBranchTime(res.time)
                     reloadIframe()
                   }
-                  // setRows([])
-                  // setColumns([])
-                  // fetchData(res.new_branch_id)
-                  // fetchData('main')
-                  // fetchBranchSize('main')
                 })
               setStage((stage) => stage + 1)
             }}
@@ -264,13 +256,6 @@ export default function Onboarding() {
                 .then((res) => res.json())
                 .then((res) => {
                   if (res.time) setResetBranchTime(res.time)
-                  // toast({
-                  //   duration: 10000,
-                  //   description: 'Fetching size of the restored table...',
-                  // })
-                  // setRows([])
-                  // setColumns([])
-                  // fetchBranchSize(newBranchName)
                   fetchData(newBranchName)
                 })
               setStage((stage) => stage + 1)
@@ -305,11 +290,13 @@ export default function Onboarding() {
             variant="outline"
             onClick={() => {
               setStage(0)
-              // setRows([])
-              // setColumns([])
               setNewBranchTime(0)
               setNewBranchSize(0)
               setNewBranchName('main')
+              const showPopElement = document.querySelector('#show-pop')
+              if (showPopElement) {
+                showPopElement.remove()
+              }
             }}
             className="mt-8 max-w-max bg-transparent text-gray-400"
           >
@@ -340,11 +327,16 @@ export default function Onboarding() {
         setLoadingData(false)
         if (res.rows.length > 0) {
           reloadIframe(true)
-          setTimeout(() => {
-            setIsVisible(true)
-            setTimeout(() => {
-              setIsVisible(false)
-            }, 5000)
+          let tmpS = setInterval(() => {
+            const showPopElement = document.querySelector('#show-pop')
+            if (showPopElement) {
+              setIsVisible(true)
+              setTimeout(() => {
+                setIsVisible(false)
+                showPopElement.remove()
+              }, 5000)
+              clearInterval(tmpS)
+            }
           }, 1000)
         }
       })
