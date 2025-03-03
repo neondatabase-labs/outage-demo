@@ -18,7 +18,7 @@ export async function GET() {
   headers.append('Accept', 'application/json')
   headers.append('Content-Type', 'application/json')
   headers.append('Authorization', `Bearer ${process.env.NEON_API_KEY}`)
-  const preserve_under_name = 'main_restored_' + new Date().getTime()
+  const preserve_under_name = 'mainrestored' + new Date().getTime()
   const body = JSON.stringify({
     preserve_under_name,
     source_branch_id: 'br-shy-morning-a57f266q',
