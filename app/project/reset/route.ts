@@ -24,17 +24,17 @@ export async function GET() {
     source_branch_id: 'br-shy-morning-a57f266q',
   })
   const start_time = performance.now()
-  await Promise.all([
+  await Promise.allSettled([
     fetch(`https://console.neon.tech/api/v2/projects/${process.env.NEON_PROJECT_ID}/branches/${process.env.NEON_PARENT_ID}/restore`, {
       method: 'POST',
       headers,
       body,
     }).then((res) => res.json()),
-    // client?.publishJSON({
-    //   url: 'https://neon-demos-outage.vercel.app/project/clean',
-    //   body: { new_branch_id: preserve_under_name },
-    //   delay: 30 * 60,
-    // }),
+    client?.publishJSON({
+      url: 'https://neon-demos-outage.vercel.app/project/clean',
+      body: { new_branch_id: preserve_under_name },
+      delay: 30 * 60,
+    }),
   ])
   const end_time = performance.now()
   return NextResponse.json({
