@@ -8,30 +8,16 @@ import { TimerReset } from 'lucide-react'
 import { Fragment, ReactElement, useEffect, useState } from 'react'
 import Confetti from 'react-confetti'
 
-const reloadIframe = () => {
+const reloadIframe = (expecting?: boolean) => {
   const iframe = document.querySelector('iframe')
   if (iframe) {
     iframe.src = iframe.src
-    const checkIframe = async () => {
-      try {
-        const response = await fetch(iframe.src)
-        if (response.status === 200) {
-          return true
-        }
-      } catch (e) {
-        return false
+    fetch(iframe.src).then((res) => {
+      if (res.status !== 200 && expecting) {
+        setTimeout(() => {
+          reloadIframe()
+        }, 200)
       }
-      return false
-    }
-    const reloadWithDelay = async (delay: number) => {
-      await new Promise((resolve) => setTimeout(resolve, delay))
-      const success = await checkIframe()
-      if (!success && iframe) {
-        iframe.src = iframe.src
-      }
-    }
-    ;[200, 400, 600, 800, 1000].forEach((delay) => {
-      reloadWithDelay(delay)
     })
   }
 }
@@ -353,7 +339,7 @@ export default function Onboarding() {
       .then((res) => {
         setLoadingData(false)
         if (res.rows.length > 0) {
-          reloadIframe()
+          reloadIframe(true)
           setTimeout(() => {
             setIsVisible(true)
             setTimeout(() => {
