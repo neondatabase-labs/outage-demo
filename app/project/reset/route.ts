@@ -24,18 +24,17 @@ export async function GET() {
     source_branch_id: 'br-shy-morning-a57f266q',
   })
   const start_time = performance.now()
-  await Promise.allSettled([
-    fetch(`https://console.neon.tech/api/v2/projects/${process.env.NEON_PROJECT_ID}/branches/${process.env.NEON_PARENT_ID}/restore`, {
-      method: 'POST',
-      headers,
-      body,
-    }).then((res) => res.json()),
-    client?.publishJSON({
-      url: 'https://neon-demos-outage.vercel.app/project/clean',
-      body: { new_branch_id: preserve_under_name },
-      delay: 30 * 60,
-    }),
-  ])
+  await fetch(`https://console.neon.tech/api/v2/projects/${process.env.NEON_PROJECT_ID}/branches/${process.env.NEON_PARENT_ID}/restore`, {
+    method: 'POST',
+    headers,
+    body,
+  })
+  const tmp = await Promise.resolve(fetch(`https://console.neon.tech/api/v2/projects/${process.env.NEON_PROJECT_ID}/branches?search=${preserve_under_name}&sort_by=updated_at&sort_order=desc&limit=1`).then((res) => res.json()))
+  await client?.publishJSON({
+    url: 'https://neon-demos-outage.vercel.app/project/clean',
+    body: { new_branch_id: tmp["branches"][0].id },
+    delay: 30 * 60,
+  })
   const end_time = performance.now()
   return NextResponse.json({
     time: end_time - start_time,
