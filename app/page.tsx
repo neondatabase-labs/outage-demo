@@ -126,7 +126,7 @@ export default function Onboarding() {
             </Button>
             <Button
               onClick={() => {
-                window.open('/feed?brancName=' + newBranchName, '_blank')
+                window.open('/feed?branchName=' + newBranchName, '_blank')
               }}
               className="group border bg-transparent text-sm text-gray-200 hover:border-white hover:bg-transparent hover:text-white"
             >
