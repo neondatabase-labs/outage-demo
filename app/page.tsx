@@ -19,25 +19,9 @@ interface Stage {
   rightView?: ReactElement
 }
 
-const reloadIframe = (expecting?: boolean) => {
+const reloadIframe = () => {
   const iframe = document.querySelector('iframe')
-  if (iframe) {
-    fetch(iframe.src)
-      .then((res) => {
-        if (res.status === 200 && expecting) {
-          const showPopElement = document.createElement('div')
-          showPopElement.id = 'show-pop'
-          document.body.appendChild(showPopElement)
-          iframe.src = iframe.src
-        }
-        if (res.status !== 200 && expecting) {
-          reloadIframe(expecting)
-        }
-      })
-      .catch(() => {
-        iframe.src = iframe.src
-      })
-  }
+  if (iframe) iframe.src = iframe.src
 }
 
 export default function Onboarding() {
@@ -48,12 +32,9 @@ export default function Onboarding() {
   const [enableBegin, setEnableBegin] = useState(true)
   //
   const { toast } = useToast()
-  const [newBranchTime, setNewBranchTime] = useState(0)
-  const [newBranchSize, setNewBranchSize] = useState(0)
   const [newBranchName, setNewBranchName] = useState('main')
   const [mainBranchSize, setMainBranchSize] = useState(0)
   const [resetBranchTime, setResetBranchTime] = useState(0)
-  const [insertBranchTime, setInsertBranchTime] = useState(0)
   //
   const IframeView = ({ src }: { src?: string }) => {
     const [isLoading, setIsLoading] = useState(false)
@@ -65,8 +46,8 @@ export default function Onboarding() {
           <div
             className="absolute left-0 top-0 h-screen w-screen opacity-15 transition duration-300"
             style={{
-              backgroundImage: 'url(/alert_1.jpg)',
               backgroundSize: 'cover',
+              backgroundImage: 'url(/alert_1.jpg)',
             }}
           />
         )}
@@ -84,18 +65,18 @@ export default function Onboarding() {
                   <g id="Reload">
                     <rect id="Rectangle" fillRule="nonzero" x="0" y="0" width="24" height="24"></rect>
                     <path
-                      d="M4,13 C4,17.4183 7.58172,21 12,21 C16.4183,21 20,17.4183 20,13 C20,8.58172 16.4183,5 12,5 C10.4407,5 8.98566,5.44609 7.75543,6.21762"
                       id="Path"
-                      className="stroke-gray-200 group-hover:stroke-gray-100"
                       strokeWidth="1.5"
                       strokeLinecap="round"
+                      className="stroke-gray-200 group-hover:stroke-gray-100"
+                      d="M4,13 C4,17.4183 7.58172,21 12,21 C16.4183,21 20,17.4183 20,13 C20,8.58172 16.4183,5 12,5 C10.4407,5 8.98566,5.44609 7.75543,6.21762"
                     ></path>
                     <path
-                      d="M9.2384,1.89795 L7.49856,5.83917 C7.27552,6.34441 7.50429,6.9348 8.00954,7.15784 L11.9508,8.89768"
                       id="Path"
-                      className="stroke-gray-200 group-hover:stroke-gray-100"
                       strokeWidth="1.5"
                       strokeLinecap="round"
+                      className="stroke-gray-200 group-hover:stroke-gray-100"
+                      d="M9.2384,1.89795 L7.49856,5.83917 C7.27552,6.34441 7.50429,6.9348 8.00954,7.15784 L11.9508,8.89768"
                     ></path>
                   </g>
                 </g>
@@ -231,7 +212,7 @@ export default function Onboarding() {
           <Button
             onClick={() => {
               const dropToast = toast({
-                duration: 4000,
+                duration: 10000,
                 description: `Dropping the users table in the main database...`,
               })
               fetch('/project/query', {
@@ -245,8 +226,11 @@ export default function Onboarding() {
                 .then((res) => res.json())
                 .then((res) => {
                   if (res.time) {
-                    setInsertBranchTime(res.time)
                     reloadIframe()
+                    toast({
+                      duration: 4000,
+                      description: `‼️ All tables have been dropped successfully!`,
+                    })
                   }
                 })
                 .finally(() => {
@@ -275,8 +259,8 @@ export default function Onboarding() {
           <div className="flex w-full flex-col gap-y-4">
             <span className="text-4xl">🚨</span>
             <span className="text-balance text-gray-200">
-              Uh-oh... <span className="font-semibold text-red-500 underline">Things look broken now</span>. Our app is down, support tickets are piling up, and the prod database
-              is the issue.
+              Uh-oh... <span className="font-semibold text-red-500">Things look broken now</span>. Our app is down, support tickets are piling up, and the prod database is the
+              issue.
             </span>
             <span className="text-balance text-gray-200">
               To bring it back, we need to run a Point-in-time restore. Here{"'s"} the catch: the Postgres database powering this app holds{' '}
@@ -295,18 +279,13 @@ export default function Onboarding() {
                 .then((res) => {
                   if (res.time) setResetBranchTime(res.time)
                   restoreToast.dismiss()
-                  reloadIframe(true)
-                  let tmpS = setInterval(() => {
-                    const showPopElement = document.querySelector('#show-pop')
-                    if (showPopElement) {
-                      setIsVisible(true)
-                      setTimeout(() => {
-                        setIsVisible(false)
-                        showPopElement.remove()
-                      }, 5000)
-                      clearInterval(tmpS)
-                    }
-                  }, 100)
+                  reloadIframe()
+                  setTimeout(() => {
+                    setIsVisible(true)
+                    setTimeout(() => {
+                      setIsVisible(false)
+                    }, 5000)
+                  }, 1000)
                 })
               setStage((stage) => stage + 1)
             }}
@@ -360,14 +339,14 @@ export default function Onboarding() {
           <h2 className="mt-4 text-xl text-white">That{"'s"} a wrap!</h2>
           <h2 className="z-10 mt-4 text-xl text-white">
             This demo gave you a taste of what{"'s"} possible with Neon{"'s"} Instant Restore. Want to learn more?{' '}
-            <a target="_blank" className="text-green-400 underline" href="https://neon.tech/blog/recover-large-postgres-databases">
+            <a target="_blank" className="text-green-400" href="https://neon.tech/blog/recover-large-postgres-databases">
               Click here to keep reading
             </a>
             .
           </h2>
           <h2 className="z-10 mt-4 text-xl text-white">
             You can also try it yourself.{' '}
-            <a target="_blank" className="text-green-400 underline" href="https://console.neon.tech/signup">
+            <a target="_blank" className="text-green-400" href="https://console.neon.tech/signup">
               Create a Neon account
             </a>
             , drop some tables, and recover in milliseconds.
@@ -381,28 +360,6 @@ export default function Onboarding() {
     },
   ]
   const [stageLength, setStageLength] = useState(stages.length)
-  const [loadingData, setLoadingData] = useState(false)
-  // const fetchBranchSize = () =>
-  //   fetch(`/project/size`)
-  //     .then((res) => res.json())
-  //     .then((res) => {
-  //       const { logical_size } = res
-  //       setMainBranchSize(logical_size)
-  //     })
-  // const fetchData = (branchName: string) => {
-  //   setLoadingData(true)
-  //   return fetch(`/project/data?branchName=${branchName}`)
-  //     .then((res) => {
-  //       fetchBranchSize(branchName)
-  //       return res.json()
-  //     })
-  //     .then((res) => {
-  //       setLoadingData(false)
-  //       if (res.rows.length > 0) {
-  //         reloadIframe(true)
-  //       }
-  //     })
-  // }
   useEffect(() => {
     if (stage === 0) {
       fetch(`/project/size`)
