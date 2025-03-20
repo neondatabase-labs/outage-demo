@@ -42,15 +42,7 @@ export default function Onboarding() {
     const [queryResults, setQueryResults] = useState<any[]>([])
     return (
       <>
-        {stage === 2 && (
-          <div
-            className="absolute left-0 top-0 h-screen w-screen opacity-15 transition duration-300"
-            style={{
-              backgroundSize: 'cover',
-              backgroundImage: 'url(/alert_1.jpg)',
-            }}
-          />
-        )}
+        {stage === 2 && <div className="absolute left-0 top-0 h-screen w-screen bg-red-800 opacity-15 transition duration-300" />}
         <div className="z-10 flex flex-col">
           <div className="mb-4 flex flex-row gap-2">
             <Button
@@ -329,13 +321,7 @@ export default function Onboarding() {
       branched: false,
       leftView: (
         <div className="contents">
-          <div
-            className="absolute left-0 top-0 h-screen w-screen opacity-10 transition duration-300"
-            style={{
-              backgroundImage: 'url(/celebrate.jpeg)',
-              backgroundSize: 'cover',
-            }}
-          />
+          <div className="absolute left-0 top-0 h-screen w-screen bg-green-800 opacity-10 transition duration-300" />
           <h2 className="mt-4 text-xl text-white">That{"'s"} a wrap!</h2>
           <h2 className="z-10 mt-4 text-xl text-white">
             This demo gave you a taste of what{"'s"} possible with Neon{"'s"} Instant Restore. Want to learn more?{' '}
