@@ -425,7 +425,11 @@ export default function Onboarding() {
       </div> */}
       <div className={cn('my-12 grid w-full max-w-3xl grid-cols-1 gap-8', stages[stage]?.rightView && 'md:grid-cols-2')}>
         {stages[stage]?.leftView && <div className={cn('flex w-full flex-col p-4')}>{stages[stage].leftView}</div>}
-        {stages[stage]?.rightView && <div className={cn('flex w-full flex-col p-4')}>{stages[stage].rightView}</div>}
+        {stage >= 1 && stage <= 3 ? (
+          <IframeView src={'/feed?branchName=' + newBranchName} />
+        ) : (
+          stages[stage]?.rightView && <div className={cn('flex w-full flex-col p-4')}>{stages[stage].rightView}</div>
+        )}
       </div>
       <div className="mt-12 flex flex-row items-center gap-x-3">
         <Button

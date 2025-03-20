@@ -2,7 +2,6 @@
 
 import { Button } from '@/components/ui/button'
 import { Heart, MessageCircle, Repeat } from 'lucide-react'
-import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 interface Tweet {
@@ -19,35 +18,33 @@ interface Tweet {
   retweets_count: number
 }
 
-const Feed = () => {
-  const searchParams = useSearchParams()
-  const branchName = searchParams.get('branchName')
+export default function Page() {
   const [tweets, setTweets] = useState<Tweet[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchTweets = async () => {
-    if (branchName) {
-      setLoading(true)
-      const response = await fetch(`/project/data?branchName=${branchName}`)
-      if (response.ok) {
-        const data = await response.json()
-        if (data.code === 0) {
-          setError('Application error: a server-side exception has occurred (see the server logs for more information). Digest: 3586024117') // Set error for server-side exception
-        } else {
-          setTweets(data.rows)
-          setError(null) // Clear error if tweets are fetched
-        }
-      } else {
-        setError('Application error: a server-side exception has occurred (see the server logs for more information). Digest: 3586024117') // Set error for server-side exception
-      }
-      setLoading(false) // Set loading to false after fetching
-    }
-  }
-
   useEffect(() => {
-    fetchTweets()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const urlParams = new URLSearchParams(window.location.search)
+    const branchNameFromUrl = urlParams.get('branchName')
+    if (branchNameFromUrl && branchNameFromUrl?.length > 0) {
+      setLoading(true)
+      fetch(`/project/data?branchName=${branchNameFromUrl}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.code === 0)
+            setError('Application error: a server-side exception has occurred (see the server logs for more information). Digest: 3586024117') // Set error for server-side exception
+          else {
+            setTweets(data.rows)
+            setError(null) // Clear error if tweets are fetched
+          }
+        })
+        .catch(() => {
+          setError('Application error: a server-side exception has occurred (see the server logs for more information). Digest: 3586024117') // Set error for server-side exception
+        })
+        .finally(() => {
+          setLoading(false)
+        })
+    }
   }, [])
 
   const renderContentWithMentions = (content: string) => {
@@ -127,5 +124,3 @@ const Feed = () => {
     </div>
   )
 }
-
-export default Feed
